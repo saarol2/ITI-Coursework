@@ -14,7 +14,6 @@ python3 CourseWorkTemplate.py <ip> <port> <message>
 Functions send_and_receive_tcp contains some comments.
 If you implement what the comments ask for you should be able to create 
 a functioning TCP part of the course work with little hassle. 
-dddd 
 
 ''' 
  
