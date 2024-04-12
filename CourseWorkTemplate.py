@@ -15,29 +15,32 @@ Functions send_and_receive_tcp contains some comments.
 If you implement what the comments ask for you should be able to create 
 a functioning TCP part of the course work with little hassle. 
 ''' 
- 
+
+host = "195.148.20.105"
+port = 10000
+
 def send_and_receive_tcp(address, port, message):
     print("You gave arguments: {} {} {}".format(address, port, message))
     # create TCP socket
-   
+    tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # connect socket to given address and port
-    
+    tcp_socket.connect((address, port))
     # python3 sendall() requires bytes like object. encode the message with str.encode() command
-    
+    encoded = message.encode()
     # send given message to socket
-    
+    tcp_socket.sendall(encoded)
     # receive data from socket
- 
+    data = tcp_socket.recv(1024)
     # data you received is in bytes format. turn it to string with .decode() command
-    
+    datastring = data.decode()
     # print received data
-    
+    print(datastring)
     # close the socket
-    
+    tcp_socket.close()
     # Get your CID and UDP port from the message
-    
+    CID, UDP = datastring.split(',')
     # Continue to UDP messaging. You might want to give the function some other parameters like the above mentioned cid and port.
-    send_and_receive_udp(address, port)
+    send_and_receive_udp(address, UDP, CID)
     return
  
  
