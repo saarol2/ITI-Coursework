@@ -44,13 +44,28 @@ def send_and_receive_tcp(address, port, message):
     return
  
  
-def send_and_receive_udp(address, port):
-    '''
-    Implement UDP part here.
-    '''
+def send_and_receive_udp(address, port, CID):
+    try:
+        udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        firstmessage = "HELLO from " + CID
+        udp_socket.sendto(firstmessage.encode(), (address, port))
+        while(True):
+            response, serverAddress = udp_socket.recvfrom(1024)
+            decodedResponse = response.decode()
+            if (decodedResponse.contains('bye')):
+                break
+            reversed = reverse_words(decodedResponse)
+            udp_socket.sendto(reversed.encode(), (address, port))
+        udp_socket.close()
+    except Exception as e:
+        print("Error occurred in UDP communication:", e)
     print("This is the UDP part. Implement it yourself.")
     return
- 
+
+def reverse_words(string):
+    words = string.split()
+    reversed_words = words[::-1]
+    return " ".join(reversed_words) 
  
 def main():
     USAGE = 'usage: %s <server address> <server port> <message>' % sys.argv[0]
