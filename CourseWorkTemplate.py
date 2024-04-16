@@ -38,7 +38,8 @@ def send_and_receive_tcp(address, port, message):
     # close the socket
     tcp_socket.close()
     # Get your CID and UDP port from the message
-    CID, UDP = datastring.split(',')
+    CID= datastring.split(' ')[1]
+    UDP= datastring.split(' ')[2]
     # Continue to UDP messaging. You might want to give the function some other parameters like the above mentioned cid and port.
     send_and_receive_udp(address, UDP, CID)
     return
@@ -52,7 +53,7 @@ def send_and_receive_udp(address, port, CID):
         while(True):
             response, serverAddress = udp_socket.recvfrom(1024)
             decodedResponse = response.decode()
-            if (decodedResponse.contains('bye')):
+            if (decodedResponse.find('Bye.') != -1):
                 break
             reversed = reverse_words(decodedResponse)
             udp_socket.sendto(reversed.encode(), (address, port))
