@@ -39,7 +39,7 @@ def send_and_receive_tcp(address, port, message):
     tcp_socket.close()
     # Get your CID and UDP port from the message
     CID= datastring.split(' ')[1]
-    UDP= datastring.split(' ')[2]
+    UDP= int(datastring.split(' ')[2])
     # Continue to UDP messaging. You might want to give the function some other parameters like the above mentioned cid and port.
     send_and_receive_udp(address, UDP, CID)
     return
