@@ -49,25 +49,26 @@ def send_and_receive_tcp(address, port, message):
 def send_and_receive_udp(address, port, CID):
     try:
         udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        cid_bytes = CID.encode()
+        ack = True
+        eom = False
+        data_remaining = 0
+        content_length = 0
         firstmessage = "Hello from " + CID
-        Data = struct.pack('!19s', str.encode(firstmessage))
-        print(Data)
-        udp_socket.sendto(Data, (address, port))
+        message = struct.pack('!8s??HH128s', cid_bytes, ack, eom, data_remaining, content_length, b'Hello from')
+        udp_socket.sendto(message, (address, port))
         while True:
             response, serverAddress = udp_socket.recvfrom(1024)
-            print(response)
-            string1, bool, string2 = struct.unpack('!8s?5s', response)
-            print(string1)
-            print(bool)
-            print(string2)
-            print("asd=)")
-            decodedResponse = string2.decode()
+            cid, ack, eom, data_remaining, content_length, content = struct.unpack('!8s??HH128s', response)
+            # Decode content
+            decodedResponse = content[:content_length].decode('utf-8')
             print(decodedResponse)
-            if 'bye' in decodedResponse:
+            if eom == True:
                 break
             reversed = reverse_words(decodedResponse)
-            print(reversed)
-            udp_socket.sendto(reversed.encode(), (address, port))
+            content_length = len(reversed)
+            new_message = struct.pack('!8s??HH128s', cid, ack, eom, data_remaining, content_length, reversed.encode('utf-8'))
+            udp_socket.sendto(new_message, (address, port))
         udp_socket.close()
     except Exception as e:
         print("Error occurred in UDP communication:", e)
