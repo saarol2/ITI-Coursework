@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
  
 # The modules required
+import struct
 import sys
 import socket
 
@@ -48,19 +49,28 @@ def send_and_receive_tcp(address, port, message):
 def send_and_receive_udp(address, port, CID):
     try:
         udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        firstmessage = "HELLO from " + CID
-        udp_socket.sendto(firstmessage.encode(), (address, port))
-        while(True):
+        firstmessage = "Hello from " + CID
+        Data = struct.pack('!19s', str.encode(firstmessage))
+        print(Data)
+        udp_socket.sendto(Data, (address, port))
+        while True:
             response, serverAddress = udp_socket.recvfrom(1024)
-            decodedResponse = response.decode()
-            if (decodedResponse.find('Bye.') != -1):
+            print(response)
+            string1, bool, string2 = struct.unpack('!8s?5s', response)
+            print(string1)
+            print(bool)
+            print(string2)
+            print("asd=)")
+            decodedResponse = string2.decode()
+            print(decodedResponse)
+            if 'bye' in decodedResponse:
                 break
             reversed = reverse_words(decodedResponse)
+            print(reversed)
             udp_socket.sendto(reversed.encode(), (address, port))
         udp_socket.close()
     except Exception as e:
         print("Error occurred in UDP communication:", e)
-    print("This is the UDP part. Implement it yourself.")
     return
 
 def reverse_words(string):
