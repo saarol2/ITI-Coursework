@@ -17,8 +17,6 @@ If you implement what the comments ask for you should be able to create
 a functioning TCP part of the course work with little hassle. 
 ''' 
 
-host = "195.148.20.105"
-port = 10000
 
 def send_and_receive_tcp(address, port, message):
     print("You gave arguments: {} {} {}".format(address, port, message))
@@ -48,27 +46,40 @@ def send_and_receive_tcp(address, port, message):
  
 def send_and_receive_udp(address, port, CID):
     try:
+        # Create UDP socket
         udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Form UDP packet structure
         cid_bytes = CID.encode()
         ack = True
         eom = False
         data_remaining = 0
         content_length = 0
+        # Form a message
         firstmessage = "Hello from " + CID
+        # Pack the UDP packet as binary data
         message = struct.pack('!8s??HH128s', cid_bytes, ack, eom, data_remaining, content_length, b'Hello from')
+        # Send the message to server
         udp_socket.sendto(message, (address, port))
         while True:
+            # Receive data
             response, serverAddress = udp_socket.recvfrom(1024)
+            # Unpack the UDP packet
             cid, ack, eom, data_remaining, content_length, content = struct.unpack('!8s??HH128s', response)
             # Decode content
             decodedResponse = content[:content_length].decode('utf-8')
             print(decodedResponse)
+            # Check if the message was the last one
             if eom == True:
                 break
+            # Reverse message
             reversed = reverse_words(decodedResponse)
+            # Set the content length
             content_length = len(reversed)
+            # Pack the new UDP packet with reversed message as binary data
             new_message = struct.pack('!8s??HH128s', cid, ack, eom, data_remaining, content_length, reversed.encode('utf-8'))
+            # Send to server
             udp_socket.sendto(new_message, (address, port))
+        # Close UDP socket
         udp_socket.close()
     except Exception as e:
         print("Error occurred in UDP communication:", e)
