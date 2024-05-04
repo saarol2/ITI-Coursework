@@ -1,0 +1,1 @@
+To compile and run the program, write the following command: python ITICourseWork.py 195.148.20.105 10000 "HELLO"
